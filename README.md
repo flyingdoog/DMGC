@@ -1,5 +1,5 @@
 # DMGC
-This is an Tensorflow implementation of the paper: Deep Multi-Graph Clustering via Attentive Cross-Graph Association
+This is a Tensorflow implementation of the paper: Deep Multi-Graph Clustering via Attentive Cross-Graph Association
 
 WSDM 2020
 
@@ -23,7 +23,3 @@ WSDM 2020
   organization={ACM}
 }
 ```
-
-
-
-

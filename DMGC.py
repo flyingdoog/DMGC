@@ -208,12 +208,6 @@ class DMGC(object):
 				logtis = t_sim
 				self.Cs[i][j] = logtis / (tf.reduce_sum(logtis, axis=0))
 
-				if i==0 and j==1:
-					self.tile_0 = tile_vec_i
-					self.re_tile_0 = re_tile_vec_i
-					self.diff_0_1 = diff
-					self.reduce_sum_diff_01 = reduce_sum_diff
-					self.debug_logtis01 = logtis
 
 
 		for i in range(n_networks):
@@ -346,7 +340,7 @@ class DMGC(object):
 					self.feed_dict_val.update({self.cross_networks_masks[i][j]:cnets_masks[i][j]})
 
 
-	def fit(self,ys=None, maxiter=2000,update_interval=140,test_time = False):
+	def fit(self,ys=None, maxiter=2000,print_every=140,test_time = False):
 
 		embs=[None]*self.n_networks
 
@@ -382,36 +376,25 @@ class DMGC(object):
 			clfs.append(KMeans(n_clusters=self.n_clusters[i], random_state=0))
 
 		for ite in range(int(maxiter)):
-			
-			if (not test_time) and ite % update_interval == 0:
-
-				if ite>0 and self.n_networks>1:
-					debug_logtis01,u0,tile_0,re_tile_0,diff_0_1,reduce_sum_diff_01,embs=sess.run([self.debug_logtis01,self.centers[0],self.tile_0,self.re_tile_0,self.diff_0_1,self.reduce_sum_diff_01,self.embs], feed_dict=self.feed_dict_val)
-
-					print('reduce_sum_diff_01\n',np.round(reduce_sum_diff_01,5))
-					print('----------------')
+			if (not test_time) and ite % print_every == 0:
+				print('----------------------epoch %d----------------------' % (ite))
+				print('loss= %.5f' % (loss))
 
 				for i in range(self.n_networks):
 					if self.n_clusters[i]>0:
 						q = sess.run(self.qs[i], feed_dict=self.feed_dict_val)
-						if i==0:
-							# print('qs[0]',q[0])
-							print('q[0]',np.round(q[0],5))
-							# print('-----')
-							# print('q[100]',np.round(q[100],5))
-							# print('-----')
-							qsum = np.sum(q,axis=0)
-							print('qsum',qsum)
-						# print('---------------')
+
 						
 						y_pred = q.argmax(1)
 						if ys[i] is not None:
 							nmi_s = np.round(metrics.mask_nmi(ys[i], y_pred), 5)
 							nmis[i] = nmi_s
 							res[i] = y_pred
-							print('maxnmi%.5f network %d Iter %d:, nmi = %.5f' % (maxnmi[i], i,ite, nmi_s),'; loss',loss,' ; 2ndloss',second_order_loss,'closs=', cluster_loss,' ; floss=', floss ,' cross_loss ',cross_loss)
+							# print('epoch %d, network %d:, maxnmi%.5f, nmi = %.5f' % (ite,i,maxnmi[i], nmi_s),'; loss',loss,' ; 2ndloss',second_order_loss,'closs=', cluster_loss,' ; floss=', floss ,' cross_loss ',cross_loss)
+							print('network: %d:, maxnmi:%.5f, nmi = %.5f' % (i,maxnmi[i], nmi_s))
 							if maxnmi[i] < nmi_s:
 								maxnmi[i] = nmi_s
+
 				if maxnmi12 <(nmis[0]+nmis[1]):
 					maxnmi12 = (nmis[0]+nmis[1])
 					best_embs = embs

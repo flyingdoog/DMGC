@@ -100,7 +100,7 @@ dmgc.feedData(adjs,maskes,xs,cnets,cnets_masks,u_js=u_js,u_is=u_is,u_labels=u_la
 print('feed data done')
 
 begin = time.time()
-embs,centers,centroids,re_graphs,best_res,align = dmgc.fit(ys=ys,update_interval=FLAGS.print_every,maxiter=FLAGS.epochs)
+embs,centers,centroids,re_graphs,best_res,align = dmgc.fit(ys=ys,print_every=FLAGS.print_every,maxiter=FLAGS.epochs)
 end = time.time()
 print('total time',(end-begin),'seconds')
 

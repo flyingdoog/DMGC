@@ -10,8 +10,10 @@ WSDM 2020
   * networkx
 
 ## Usage
-	*python run_exp.py
-
+### train the model
+	python run_exp.py
+### show visualization results
+	python vis.py
 
 ## References
 ```
